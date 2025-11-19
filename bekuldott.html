@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beküldött üzenetek - {{PROJECT_NAME}}</title>
+</head>
+<body>
+    <h2>Beküldött üzenetek</h2>
+
+    <!-- SABLON: táblázat a beküldött üzenetekhez -->
+    <table id="messagesTable" border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Név</th>
+                <th>E-mail</th>
+                <th>Tárgy</th>
+                <th>Üzenet</th>
+                <!-- SABLON: további oszlopok, ha vannak -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- SABLON: ide kerülnek a sorok a getKapcsolat() callback-je alapján -->
+        </tbody>
+    </table>
+
+    <script>
+        // SABLON: példa, hogyan töltheted be az adatokat a getKapcsolat() modulból
+        fetch('/getKapcsolat')
+            .then(res => res.json())
+            .then(rows => {
+                const tbody = document.querySelector('#messagesTable tbody');
+                rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.id}</td>
+                        <td>${row.nev}</td>
+                        <td>${row.email}</td>
+                        <td>${row.targy}</td>
+                        <td>${row.uzenet}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+    </script>
+</body>
+</html>

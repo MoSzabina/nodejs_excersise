@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adatbázis műveletek</title>
+</head>
+<body>
+    <header style="margin:10pt;">
+        <h1>Adatbázis műveletek</h1>
+        <h2>Új rekord hozzáadása</h2>
+    </header>
+    <main>
+        <section style="margin:10pt;">
+            <form id="addForm">
+			<div>
+				<label for="nameInput">Találmány neve:</label>
+				<input id="nameInput" type="text" name="talnev" placeholder="Név" required>
+			</div>
+			<button type="submit" style="margin-top: 25px;">Hozzáadás</button>
+            </form>
+        </section>
+        <section>
+            <table id="crudList" border="1">
+                <thead>
+                    <tr>
+                        <th>Tkod</th>
+                        <th>Találmány neve</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody> </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = '/crud';
+
+        const fetchRecords = async () => {
+            try {
+                const response = await fetch(API_URL);
+                const records = await response.json();
+                renderTable(records);
+            } catch (error) {
+                console.error("Hiba: ", error);
+            }
+        };
+
+        const renderTable = (records) => {
+            const tableBody = document.querySelector('#crudList tbody');
+            tableBody.innerHTML = records.map(record => `
+                <tr>
+                    <td>${record.tkod}</td>
+                    <td>
+                        <input type="text" value="${record.talnev}" data-id="${record.tkod}">
+                    </td>
+                    <td>
+                        <button onclick="upd(${record.tkod})">Mentés</button>
+                        <button onclick="del(${record.tkod})">Törlés</button>
+                    </td>
+                </tr>
+            `).join('');
+        };
+		
+		const del = async (tkod) => {
+			const data = new URLSearchParams({ tkod: tkod });
+			try {
+				await fetch(API_URL, { 
+					method: 'DELETE', 
+					body: data 
+				});
+				fetchRecords();
+			} catch (error) {
+				console.error("Rekord törlése sikertelen!", error);
+			}
+		};
+
+        const add = async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = new URLSearchParams(formData);
+            try {
+                await fetch(API_URL, { method: 'POST', body: data });
+                event.target.reset();
+                fetchRecords();
+            } catch (error) {
+                console.error("Rekord hozzáadása sikertelen!", error);
+            }
+        };
+
+		const upd = async (tkod) => {
+			const input = document.querySelector(`input[data-id="${tkod}"]`);
+			const data = new URLSearchParams({ 
+				talnev: input.value, 
+				tkod: tkod 
+			});
+			try {
+				await fetch(API_URL, { method: 'PUT', body: data });
+				fetchRecords();
+			} catch (error) {
+				console.error("Rekord frissítése sikertelen!", error);
+			}
+		};
+
+        document.getElementById('addForm').addEventListener('submit', add);
+        fetchRecords();
+    </script>
+</body>
+</html>

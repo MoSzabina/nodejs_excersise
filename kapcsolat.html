@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kapcsolat - {{PROJECT_NAME}}</title> <!-- IDE: cseréld a projekt nevére -->
+</head>
+<body>
+    <!-- SABLON: Kapcsolati űrlap -->
+    <form action="/uzenetKuldes" method="POST">
+        <h2>Kapcsolat</h2>
+
+        <div>
+            <label for="nev">Név:</label>
+            <input type="text" id="nev" name="nev" required>
+        </div>
+
+        <div>
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div>
+            <label for="targy">Tárgy:</label>
+            <input type="text" id="targy" name="targy" required>
+        </div>
+
+        <div>
+            <label for="uzenet">Üzenet:</label>
+            <textarea id="uzenet" name="uzenet" rows="5" required></textarea>
+        </div>
+
+        <div>
+            <button type="submit">Beküldés</button>
+        </div>
+    </form>
+
+    <!-- SABLON: Itt adhatsz hozzá további tartalmat vagy stílusokat -->
+</body>
+</html>

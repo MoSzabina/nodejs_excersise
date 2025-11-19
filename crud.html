@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD - {{PROJECT_NAME}}</title>
+</head>
+<body>
+    <h2>Rekordok kezelése</h2>
+
+    <!-- SABLON: rekordok táblázata -->
+    <table id="recordsTable" border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Mező1</th>
+                <th>Mező2</th>
+                <!-- SABLON: további oszlopok -->
+                <th>Műveletek</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- SABLON: ide kerülnek a sorok a crud GET adatai alapján -->
+        </tbody>
+    </table>
+
+    <!-- SABLON: új rekord hozzáadása -->
+    <h3>Új rekord létrehozása</h3>
+    <form id="createForm">
+        <input type="text" name="mező1" placeholder="Mező1" required>
+        <input type="text" name="mező2" placeholder="Mező2" required>
+        <!-- SABLON: további mezők -->
+        <button type="submit">Létrehozás</button>
+    </form>
+
+    <script>
+        // SABLON: rekordok betöltése
+        function loadRecords() {
+            fetch('/crud')
+                .then(res => res.json())
+                .then(rows => {
+                    const tbody = document.querySelector('#recordsTable tbody');
+                    tbody.innerHTML = '';
+                    rows.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row.id}</td>
+                            <td>${row.mező1 || ''}</td>
+                            <td>${row.mező2 || ''}</td>
+                            <td>
+                                <button onclick="updateRecord(${row.id})">Módosítás</button>
+                                <button onclick="deleteRecord(${row.id})">Törlés</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
+
+        // SABLON: új rekord létrehozása
+        document.querySelector('#createForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+
+            fetch('/crud', {
+                method: 'POST',
+                body: new URLSearchParams(data)
+            }).then(() => {
+                e.target.reset();
+                loadRecords();
+            });
+        });
+
+        // SABLON: rekord módosítás (példa)
+        function updateRecord(id) {
+            // IDE: implementáld a PUT művelet logikáját
+            alert('Frissítés: ' + id);
+        }
+
+        // SABLON: rekord törlés
+        function deleteRecord(id) {
+            fetch('/crud', {
+                method: 'DELETE',
+                body: new URLSearchParams({ id })
+            }).then(() => loadRecords());
+        }
+
+        // Betöltés oldal betöltésekor
+        loadRecords();
+    </script>
+</body>
+</html>
